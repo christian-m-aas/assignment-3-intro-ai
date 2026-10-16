@@ -1,7 +1,7 @@
-State = tuple[int, list[str | int]]  # Tuple of player (whose turn it is),
-                                     # and the buckets (as str)
-                                     # or the number in a bucket
-Action = str | int  # Bucket choice (as str) or choice of number
+import math
+
+State = tuple[int, list[str | int]]
+Action = str | int
 
 
 class Game:
@@ -42,3 +42,57 @@ class Game:
             print(f'P1\'s utility is {self.utility(state, 0)}')
         else:
             print(f'it is P{self.to_move(state)+1}\'s turn')
+
+
+def minimax_search(game: Game, state: State) -> Action | None:
+    player = game.to_move(state)
+
+    def max_value(state: State) -> tuple[float, Action | None]:
+        if game.is_terminal(state):
+            return game.utility(state, player), None
+
+        v = -math.inf
+        move = None
+
+        for action in game.actions(state):
+            v2, _ = min_value(game.result(state, action))
+
+            if v2 > v:
+                v = v2
+                move = action
+
+        return v, move
+
+    def min_value(state: State) -> tuple[float, Action | None]:
+        if game.is_terminal(state):
+            return game.utility(state, player), None
+
+        v = math.inf
+        move = None
+
+        for action in game.actions(state):
+            v2, _ = max_value(game.result(state, action))
+
+            if v2 < v:
+                v = v2
+                move = action
+
+        return v, move
+
+    value, move = max_value(state)
+    return move
+
+game = Game()
+
+state = game.initial_state()
+game.print(state)
+
+while not game.is_terminal(state):
+    player = game.to_move(state)
+    action = minimax_search(game, state)
+
+    print(f'P{player+1}\'s action: {action}')
+
+    assert action is not None
+    state = game.result(state, action)
+    game.print(state)
