@@ -45,8 +45,42 @@ class Game:
             print(f'it is P{self.to_move(state)+1}\'s turn')
 
 def minimax_search(game: Game, state: State) -> Action | None:
-    # YOUR CODE HERE
-    assert False, "Not implemented"
+    player = game.to_move(state)
+
+    def max_value(state: State) -> tuple[float, Action | None]:
+        if game.is_terminal(state):
+            return game.utility(state, player), None
+
+        v = -math.inf
+        move = None
+
+        for action in game.actions(state):
+            v2, _ = min_value(game.result(state, action))
+            
+            if v2 > v:
+                v = v2
+                move = action
+
+        return v, move
+
+    def min_value(state: State) -> tuple[float, Action | None]:
+        if game.is_terminal(state):
+            return game.utility(state, player), None
+
+        v = math.inf
+        move = None
+
+        for action in game.actions(state):
+            v2, _ = max_value(game.result(state, action))
+
+            if v2 < v:
+                v = v2
+                move = action
+
+        return v, move
+
+    value, move = max_value(state)
+    return move
 
 game = Game(5)
 
