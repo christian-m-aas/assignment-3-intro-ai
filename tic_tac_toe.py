@@ -1,4 +1,5 @@
 from copy import deepcopy
+from alpha_beta_pruning import alpha_beta_search
 
 State = tuple[int, list[list[int | None]]]  # Tuple of player (whose turn it is),
                                             # and board
@@ -75,3 +76,11 @@ class Game:
                 print('The game is a draw')
         else:
             print(f'It is P{self.to_move(state)+1}\'s turn to move')
+
+
+game = Game() #mekker et spill-objektet
+state = game.initial_state()      #tomt brett
+while not game.is_terminal(state): #schpeller
+    action = alpha_beta_search(game, state)
+    state = game.result(state, action)
+    game.print(state)
