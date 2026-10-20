@@ -1,5 +1,7 @@
 from copy import deepcopy
+import time
 from alpha_beta_pruning import alpha_beta_search
+from minimax import minimax_search
 
 State = tuple[int, list[list[int | None]]]  # Tuple of player (whose turn it is),
                                             # and board
@@ -78,9 +80,20 @@ class Game:
             print(f'It is P{self.to_move(state)+1}\'s turn to move')
 
 
-game = Game() #mekker et spill-objektet
-state = game.initial_state()      #tomt brett
-while not game.is_terminal(state): #schpeller
-    action = alpha_beta_search(game, state)
-    state = game.result(state, action)
+if __name__ == '__main__':
+    game = Game()
+    state = game.initial_state()
     game.print(state)
+    while not game.is_terminal(state):
+        player = game.to_move(state)
+        action = minimax_search(game, state)
+        print(f'P{player+1}\'s action: {action}')
+        state = game.result(state, action)
+        game.print(state)
+
+    # Runtime of the first move: Minimax vs alpha-beta pruning
+    initial = game.initial_state()
+    for name, search in [('Minimax', minimax_search), ('Alpha-beta', alpha_beta_search)]:
+        start = time.perf_counter()
+        move = search(game, initial)
+        print(f'{name}: first move {move}, {time.perf_counter() - start:.3f} s')
