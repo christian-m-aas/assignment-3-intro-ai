@@ -82,14 +82,17 @@ class Game:
 
 if __name__ == '__main__':
     game = Game()
-    state = game.initial_state()
-    game.print(state)
-    while not game.is_terminal(state):
-        player = game.to_move(state)
-        action = minimax_search(game, state)
-        print(f'P{player+1}\'s action: {action}')
-        state = game.result(state, action)
+    # Self-play with both algorithms (the player whose turn it is is the MAX player)
+    for name, search in [('Minimax', minimax_search), ('Alpha-beta pruning', alpha_beta_search)]:
+        print(f'===== Self-play with {name} =====')
+        state = game.initial_state()
         game.print(state)
+        while not game.is_terminal(state):
+            player = game.to_move(state)
+            action = search(game, state)
+            print(f'P{player+1}\'s action: {action}')
+            state = game.result(state, action)
+            game.print(state)
 
     # Runtime of the first move: Minimax vs alpha-beta pruning
     initial = game.initial_state()

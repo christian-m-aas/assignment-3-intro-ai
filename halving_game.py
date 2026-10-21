@@ -1,3 +1,4 @@
+import math
 from minimax import minimax_search
 
 State = tuple[int, int] # Tuple of player (whose turn it is),
